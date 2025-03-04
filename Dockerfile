@@ -23,7 +23,7 @@ RUN pip3 install --upgrade pip setuptools wheel packaging psutil
 RUN pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu118
 
 # 6. Install a prebuilt `flash_attn` wheel (skip compiling from source)
-RUN pip3 install flash-attn --no-build-isolation
+RUN MAX_JOBS=4 pip3 install flash-attn --no-build-isolation
 
 # 7. Install the rest of the dependencies
 RUN pip3 install -r requirements.txt
