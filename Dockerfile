@@ -17,17 +17,19 @@ COPY . /app/Wan2.1
 WORKDIR /app/Wan2.1
 
 # 4. Upgrade pip & install dependencies
-RUN pip3 install --upgrade pip setuptools wheel
-RUN pip3 install packaging  # ✅ Install packaging before requirements.txt
+RUN pip3 install --upgrade pip setuptools wheel packaging
 
-# 5. Install dependencies
+# 5. Install PyTorch **before** requirements.txt
+RUN pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+
+# 6. Install dependencies
 RUN pip3 install -r requirements.txt
 RUN pip3 install "huggingface_hub[cli]" "xfuser>=0.4.1"
 
-# 6. Copy an entrypoint script
+# 7. Copy an entrypoint script
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
-# 7. Set the entrypoint
+# 8. Set the entrypoint
 ENTRYPOINT ["/app/entrypoint.sh"]
 
