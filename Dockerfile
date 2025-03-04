@@ -2,7 +2,7 @@
 
 FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04
 
-# 1. Install basic system dependencies
+# 1. Install system dependencies
 RUN apt-get update && apt-get install -y \
     python3.10 python3-pip ffmpeg git wget \
     build-essential cmake ninja-build && \
@@ -17,19 +17,23 @@ COPY . /app/Wan2.1
 WORKDIR /app/Wan2.1
 
 # 4. Upgrade pip & install dependencies
-RUN pip3 install --upgrade pip setuptools wheel packaging
+RUN pip3 install --upgrade pip setuptools wheel packaging psutil
 
 # 5. Install PyTorch **before** requirements.txt
 RUN pip3 install torch torchvision --index-url https://download.pytorch.org/whl/cu118
 
-# 6. Install dependencies
+# 6. Install a prebuilt `flash_attn` wheel (skip compiling from source)
+RUN pip3 install flash-attn --no-build-isolation
+
+# 7. Install the rest of the dependencies
 RUN pip3 install -r requirements.txt
 RUN pip3 install "huggingface_hub[cli]" "xfuser>=0.4.1"
 
-# 7. Copy an entrypoint script
+# 8. Copy an entrypoint script
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
-# 8. Set the entrypoint
+# 9. Set the entrypoint
 ENTRYPOINT ["/app/entrypoint.sh"]
+
 
